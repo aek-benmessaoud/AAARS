@@ -25,3 +25,7 @@ htmlcov/
 paper/*.aux
 paper/*.log
 paper/*.out
+
+# Paper manuscript (code repo is source-only; paper kept locally, not on GitHub)
+paper/
+manuscript.md
