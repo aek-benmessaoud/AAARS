@@ -166,7 +166,16 @@ that myopic threshold rules ignore the expected value of future measurements---a
 share, though our setting couples stopping to a nonparametric richness estimate rather than a
 learned posterior. In robotics, IA-TIGRIS~\cite{moon2026iatigris} adaptively gathers information
 online with informed-sampling informative-path planning, but grants no statistical clearance
-guarantee. To our knowledge no prior work couples a \emph{ground-truth-free}, \emph{online} fleet
+guarantee. Placed \&~Castellanos~\cite{placed2022enough} argue that autonomous exploration-stopping
+decisions remain understudied relative to exploration algorithms themselves, a gap this paper also
+targets. Closest in spirit, Luperto et al.~\cite{luperto2025mapcompleteness} learn a task-independent,
+ground-truth-free stopping criterion for robot exploration from partial occupancy maps, but diagnose
+\emph{map} completeness rather than allocation bias, and do not couple their criterion to a
+nonparametric richness estimator. Outside robotics, Bron et al.~\cite{bron2024chaotar} apply Chao's
+estimator directly as a stopping criterion for technology-assisted document review, the closest
+methodological analogue to AAARS; their setting, however, assumes a fixed recall target against a
+static corpus rather than an allocation policy that can adversarially bias detection frequencies
+over time. To our knowledge no prior work couples a \emph{ground-truth-free}, \emph{online} fleet
 diagnosis to an \emph{adaptive} richness-certification threshold; this is the gap AAARS fills.
 
 \paragraph{Coverage-aware estimation.}
@@ -611,6 +620,22 @@ B.~Moon, N.~Suvarna, A.~Jong, S.~Chatterjee, J.~Yuan, M.~Cao, and S.~Scherer.
 \newblock IA-TIGRIS: An incremental and adaptive sampling-based planner for online informative path
 planning.
 \newblock \emph{IEEE Transactions on Robotics}, 2026. DOI:10.1109/TRO.2026.3672542.
+
+\bibitem{placed2022enough}
+J.~A.~Placed and J.~A.~Castellanos.
+\newblock Enough is enough: Towards autonomous uncertainty-driven stopping criteria for robot
+exploration.
+\newblock In \emph{Proc. IAV} (IFAC), pages 126--132, 2022. DOI:10.1016/j.ifacol.2022.07.594.
+
+\bibitem{luperto2025mapcompleteness}
+M.~Luperto, M.~M.~Ferrara, G.~Boracchi, and F.~Amigoni.
+\newblock Estimating map completeness in robot exploration.
+\newblock \emph{Autonomous Robots}, 50:6, 2026. DOI:10.1007/s10514-025-10221-8.
+
+\bibitem{bron2024chaotar}
+M.~P.~Bron, P.~G.~M.~van der Heijden, A.~J.~Feelders, and A.~P.~J.~M.~Siebes.
+\newblock Using Chao's estimator as a stopping criterion for technology-assisted review.
+\newblock \emph{arXiv preprint arXiv:2404.01176}, 2024.
 
 \end{thebibliography}
 

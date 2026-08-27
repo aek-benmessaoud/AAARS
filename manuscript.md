@@ -53,7 +53,7 @@ To our knowledge this is the first treatment of *online adaptive enrichment stop
 
 **Adaptive threshold selection.** Sequential hypothesis testing (SPRT [6]) and multiple-hypothesis corrections adjust evidence thresholds based on accumulated data, but require a well-specified likelihood, which Chao-type estimators deliberately avoid.
 
-**Adaptive and online stopping.** Recent work treats the termination decision itself as part of a sequential decision problem rather than a fixed threshold. Cheng & Huan [8] cast stopping for sequential Bayesian experimental design as a coupled design-and-stopping policy optimized by policy gradients, arguing that myopic threshold rules ignore the expected value of future measurements — a perspective we share, though our setting couples stopping to a nonparametric richness estimate rather than a learned posterior. In robotics, IA-TIGRIS [9] adaptively gathers information online with informed-sampling informative-path planning, but grants no statistical clearance guarantee. To our knowledge no prior work couples a *ground-truth-free*, *online* fleet diagnosis to an *adaptive* richness-certification threshold; this is the gap AAARS fills.
+**Adaptive and online stopping.** Recent work treats the termination decision itself as part of a sequential decision problem rather than a fixed threshold. Cheng & Huan [8] cast stopping for sequential Bayesian experimental design as a coupled design-and-stopping policy optimized by policy gradients, arguing that myopic threshold rules ignore the expected value of future measurements — a perspective we share, though our setting couples stopping to a nonparametric richness estimate rather than a learned posterior. In robotics, IA-TIGRIS [9] adaptively gathers information online with informed-sampling informative-path planning, but grants no statistical clearance guarantee. Placed & Castellanos [10] argue that autonomous exploration-stopping decisions remain understudied relative to exploration algorithms themselves, a gap this paper also targets. Closest in spirit, Luperto et al. [11] learn a task-independent, ground-truth-free stopping criterion for robot exploration from partial occupancy maps, but diagnose *map* completeness rather than allocation bias, and do not couple their criterion to a nonparametric richness estimator. Outside robotics, Bron et al. [12] apply Chao's estimator directly as a stopping criterion for technology-assisted document review, the closest methodological analogue to AAARS; their setting, however, assumes a fixed recall target against a static corpus rather than an allocation policy that can adversarially bias detection frequencies over time. To our knowledge no prior work couples a *ground-truth-free*, *online* fleet diagnosis to an *adaptive* richness-certification threshold; this is the gap AAARS fills.
 
 **Coverage-aware estimation.** The connection between *sample coverage* and unseen-mass estimation is classical (Good–Turing [3]); the Chao & Jost coverage estimator [4] explicitly renormalizes by estimated sample coverage. We build on this intuition but supply coverage *online* from the fleet's own scan history, and couple it to a *stopping* (not just an estimation) decision.
 
@@ -272,6 +272,12 @@ We presented **AAARS**, a ground-truth-free, online, adaptive stopping rule that
 [8] C. Cheng and X. Huan. "Optimal stopping for sequential Bayesian experimental design." *arXiv preprint arXiv:2509.21734*, 2025.
 
 [9] B. Moon, N. Suvarna, A. Jong, S. Chatterjee, J. Yuan, M. Cao, and S. Scherer. "IA-TIGRIS: An incremental and adaptive sampling-based planner for online informative path planning." *IEEE Transactions on Robotics*, 2026. DOI:10.1109/TRO.2026.3672542.
+
+[10] J. A. Placed and J. A. Castellanos. "Enough is enough: Towards autonomous uncertainty-driven stopping criteria for robot exploration." *Proc. IAV (IFAC)*, pp. 126–132, 2022. DOI:10.1016/j.ifacol.2022.07.594.
+
+[11] M. Luperto, M. M. Ferrara, G. Boracchi, and F. Amigoni. "Estimating map completeness in robot exploration." *Autonomous Robots*, 50:6, 2026. DOI:10.1007/s10514-025-10221-8.
+
+[12] M. P. Bron, P. G. M. van der Heijden, A. J. Feelders, and A. P. J. M. Siebes. "Using Chao's estimator as a stopping criterion for technology-assisted review." *arXiv preprint arXiv:2404.01176*, 2024.
 
 ---
 
