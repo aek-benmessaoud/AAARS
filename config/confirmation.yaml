@@ -1,0 +1,61 @@
+# Confirmation campaign configuration
+# Seeds 10-29, using thresholds selected from discovery
+
+# Use seeds 10-29 for confirmation (20 seeds)
+num_runs: 20
+run_offset: 10
+base_seed: 0
+seed_stride: 1000
+
+# Full budget
+max_steps: 6000
+
+# Thresholds to be filled in after discovery campaign
+# These are initial defaults
+aaars:
+  window_size: 8
+  w_temporal: 0.4
+  w_spatial: 0.3
+  w_frequency: 0.3
+  ema_alpha: 0.1
+  base_alpha: 0.05
+  risk_lambda: 1.0
+
+# Configurations to test
+configs:
+  base:
+    grid_size: 100
+    num_mines: 60
+    num_agents: 6
+    max_steps: 6000
+  intermediate:
+    grid_size: 150
+    num_mines: 135
+    num_agents: 9
+    max_steps: 5000
+  large:
+    grid_size: 200
+    num_mines: 240
+    num_agents: 12
+    max_steps: 9000
+  fleet_3:
+    grid_size: 100
+    num_mines: 60
+    num_agents: 3
+    max_steps: 6000
+  fleet_12:
+    grid_size: 100
+    num_mines: 60
+    num_agents: 12
+    max_steps: 6000
+
+# Detectability regimes
+detectabilities:
+  - homogeneous
+  - hetA
+  - hetB
+
+# Allocation policies
+allocations:
+  - boustro
+  - minerich

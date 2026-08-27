@@ -1,0 +1,16 @@
+{
+  "config": "base_100x100_K60_N6",
+  "seeds": "10-29",
+  "aaars_params": {
+    "w_temporal": 0.0,
+    "w_coverage": 0.55,
+    "w_frequency": 0.45,
+    "ema_alpha": 0.1,
+    "base_alpha": 0.05,
+    "risk_lambda": 1.0,
+    "blend_threshold": 0.3,
+    "num_bins": 5
+  },
+  "total_episodes": 40,
+  "total_time_min": 12.4
+}

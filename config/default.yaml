@@ -1,0 +1,48 @@
+# Project11-AAARS default configuration
+# Environment
+grid_size: 100
+num_agents: 6
+fov_radius: 5
+obstacle_ratio: 0.05
+comm_range: 5.0
+info_model: "comm_limited"
+
+# Targets
+num_mines: 60
+p_bar: 0.7
+detectability: "homogeneous"
+strata: [0.9, 0.6, 0.3]
+
+# Experiment
+max_steps: 6000
+trace_stride: 10
+base_seed: 0
+seed_stride: 1000
+
+# Stopping rules
+n_min: 5
+f2_min: 5
+f2_ratio: 0.08
+ci_rel: 0.05
+tau_diminishing: 150
+
+# AAARS controller
+aaars:
+  window_size: 8
+  num_bins: 5
+  w_temporal: 0.0
+  w_coverage: 0.55
+  w_frequency: 0.45
+  ema_alpha: 0.1
+  base_alpha: 0.05
+  risk_lambda: 1.0
+  blend_threshold: 0.30
+
+# Discrete selector (ablation)
+discrete:
+  window_size: 8
+  hysteresis_M: 3
+  t_low: 0.15
+  t_high: 0.35
+  s_low: 0.10
+  s_high: 0.25

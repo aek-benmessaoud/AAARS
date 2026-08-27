@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Test / tooling caches
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/
+
+# LaTeX build artifacts (keep the source .tex and compiled .pdf)
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+paper/*.aux
+paper/*.log
+paper/*.out
