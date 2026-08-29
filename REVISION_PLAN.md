@@ -175,8 +175,11 @@ so it cannot silently drift from the submitted paper after re-runs.
       explicit.
 - [x] Paper: added one sentence to the leak-free paragraph stating the boundary is *enforced by
       construction* (`PerceptStep`), plus the footnote.
-- [ ] (optional) add a test asserting the leaked-key invariants on the runner result dict the same
+- [x] (optional) add a test asserting the leaked-key invariants on the runner result dict the same
       way `test_no_ground_truth_leakage.py` does for the controller.
+      -> Done: `TestRunnerResultDictNoGroundTruth` asserts the recorded PerceptStep stream carries
+      exactly the leak-free key set, no ground-truth token, and that ground truth is confined to the
+      explicit scorer `_trace` / `*__recall` outcome fields, never the rule-facing stream.
 
 ## D4. Broadened regression guard  [DONE]
 - [x] New `experiments/power/regression_guard.py` recomputes the aggregates behind EVERY manuscript
