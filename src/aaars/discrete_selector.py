@@ -7,6 +7,7 @@ rather than the continuous blend used by the main AAARS algorithm.
 """
 
 import numpy as np
+from src.percepts import PerceptStep
 from src.aaars.observation_monitor import ObservationMonitor
 from src.aaars.temporal_diagnostics import TemporalDiagnostics
 from src.aaars.spatial_diagnostics import SpatialDiagnostics
@@ -73,12 +74,14 @@ class DiscreteSelectorController:
         else:
             return "MODERATE"
     
-    def step(self, bits_union, step):
+    def step(self, percept: "PerceptStep"):
         if self.stopped:
             return {"stop": True, "estimator": self.current_estimator,
                     "state": "STOPPED", "blended": None, "armed": True,
                     "diagnostics": {}}
         
+        bits_union = percept.bits
+        step = percept.t
         self.monitor.update(bits_union, step)
         n_det = self.monitor.n_det
         f2 = self.monitor.f2

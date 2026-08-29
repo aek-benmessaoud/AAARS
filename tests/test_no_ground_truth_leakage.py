@@ -8,6 +8,11 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.aaars.controller import AAARSController
+from src.percepts import PerceptStep
+
+
+def _percept(bits, t):
+    return PerceptStep(t=t, bits=bits, fleet_coverage=0.0)
 
 
 class TestAAARSController:
@@ -21,7 +26,7 @@ class TestAAARSController:
             bits[:] = 0
             if t % 5 == 0:
                 bits[10, 10] = 1  # simulated detection
-            result = ctrl.step(bits, t)
+            result = ctrl.step(_percept(bits, t))
             
             # Result should never contain ground truth fields
             result_str = str(result)
@@ -41,7 +46,7 @@ class TestAAARSController:
         
         # Very few detections
         bits[0, 0] = 1
-        result = ctrl.step(bits, 1)
+        result = ctrl.step(_percept(bits, 1))
         assert result["armed"] is False
         assert result["stop"] is False
     
@@ -64,7 +69,7 @@ class TestAAARSController:
             bits[7, 7] = 1
             bits[8, 8] = 1
             bits[9, 9] = 1
-            result = ctrl.step(bits, t)
+            result = ctrl.step(_percept(bits, t))
         
         # Should be armed but likely not stopped yet (few detections)
         assert result["armed"] is True
@@ -77,7 +82,7 @@ class TestAAARSController:
         for t in range(1, 200):
             bits[:] = 0
             bits[t % 40, t % 40] = 1
-            result = ctrl.step(bits, t)
+            result = ctrl.step(_percept(bits, t))
             risk = result.get("risk_score", 0)
             assert 0.0 <= risk <= 1.0, f"Risk score {risk} out of [0,1]"
     
@@ -88,7 +93,7 @@ class TestAAARSController:
         bits[0, 0] = 1
         
         for t in range(1, 20):
-            ctrl.step(bits, t)
+            ctrl.step(_percept(bits, t))
         
         ctrl.reset()
         assert ctrl.stopped is False

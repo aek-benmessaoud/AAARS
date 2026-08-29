@@ -9,6 +9,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.aaars.discrete_selector import DiscreteSelectorController
 from src.aaars.risk_score import RiskScore
+from src.percepts import PerceptStep
+
+
+def _percept(bits, t):
+    return PerceptStep(t=t, bits=bits, fleet_coverage=0.0)
 
 
 class TestDiscreteSelector:
@@ -34,7 +39,7 @@ class TestDiscreteSelector:
             bits[7, 7] = 1
             bits[8, 8] = 1
             bits[9, 9] = 1
-            result = ds.step(bits, t)
+            result = ds.step(_percept(bits, t))
         
         # With hysteresis_M=3, estimator should not switch immediately
         # Just verify it has a valid estimator
@@ -49,7 +54,7 @@ class TestDiscreteSelector:
             bits[:] = 0
             if t % 3 == 0:
                 bits[t % 30, t % 30] = 1
-            result = ds.step(bits, t)
+            result = ds.step(_percept(bits, t))
             result_str = str(result)
             for leak in ["true_K", "true_recall", "mine_mask"]:
                 assert leak not in result_str

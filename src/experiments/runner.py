@@ -29,13 +29,18 @@ if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
 from src.environment.mine_env import build_mine_env
+from src.percepts import PerceptStep
+from src.percepts.io import percept_to_dict
 from src.estimators.chao1 import residual_estimate
 from src.estimators.chao92 import chao92_from_freq, full_frequencies
 from src.allocation.boustro_lanes import BoustroLanesPolicy
 from src.allocation.mine_richness import MineRichnessPolicy
+from src.allocation.realistic_policies import (
+    FrontierPoorCoordPolicy, GreedyCoveragePolicy, HotspotPatrolPolicy)
 from src.aaars.controller import AAARSController
 from src.aaars.discrete_selector import DiscreteSelectorController
 from src.stopping.diminishing import DiminishingStop
+from src.stopping.sequential import RateCS, GapSPRT
 from src.utils.seed_manager import env_seed_for_run, policy_seed_for
 
 
@@ -58,6 +63,10 @@ DEFAULT_CFG = {
 AAARS_STOP_RULES = [
     "chao1_ci", "chao92_ci", "aaars", "discrete_aaars",
     "oracle_95", "fixed_2", "diminishing",
+    # isolation baselines (added in revision)
+    "threshold_aaars", "coverage_only",
+    # modern anytime-valid baselines (added in revision)
+    "rate_cs", "gap_sprt",
 ]
 
 
@@ -72,11 +81,17 @@ def build_allocation(name, seed_i, agent_id, cfg):
                                   agent_id=agent_id, lane_passes=3)
     if name == "minerich":
         return MineRichnessPolicy(seed=seed_i, fov_radius=fov)
+    if name in ("frontier", "frontier_poorcoord"):
+        return FrontierPoorCoordPolicy(seed=seed_i, fov_radius=fov)
+    if name in ("greedy", "greedy_cover"):
+        return GreedyCoveragePolicy(seed=seed_i, fov_radius=fov)
+    if name in ("hotspot", "hotspot_patrol"):
+        return HotspotPatrolPolicy(seed=seed_i, fov_radius=fov)
     raise ValueError(f"Unknown allocation: {name}")
 
 
 def run_episode(alloc_name, run_index, env_seed, cfg=None,
-                collect_trace=True):
+                collect_trace=True, collect_percepts=False):
     """Run one episode and evaluate all stopping methods.
     
     Args:
@@ -85,6 +100,8 @@ def run_episode(alloc_name, run_index, env_seed, cfg=None,
         env_seed: explicit environment seed
         cfg: dict of configuration overrides
         collect_trace: whether to record per-step trace
+        collect_percepts: whether to record the full per-step PerceptStep
+            stream (for offline replay, D5)
     
     Returns:
         dict with per-method results and metadata
@@ -131,13 +148,23 @@ def run_episode(alloc_name, run_index, env_seed, cfg=None,
         grid_size=cfg["grid_size"],
     )
     diminishing = DiminishingStop(tau=150, n_min=5)
-    
+
+    # Modern anytime-valid baselines (fair 95% level, leak-free on bits)
+    rate_cs = RateCS(min_silent_cells=8, min_coverage=0.90)
+    gap_sprt = GapSPRT(p0=0.6, p1=0.03, alpha=0.05, beta=0.05)
+
     # State tracking
     stop_t = {r: None for r in AAARS_STOP_RULES}
+    prev_n_det = -1
+    prev_scanmask = None
     true_found_series = []
     trace = []
     last_chao1_est = None
     last_chao92_est = None
+    last_cover = 0.0
+    aaars_stop_cover = None
+    cover_series = []
+    percept_stream = []
     
     t0 = time.perf_counter()
     
@@ -165,9 +192,6 @@ def run_episode(alloc_name, run_index, env_seed, cfg=None,
         last_chao1_est = est1
         f2_floor = max(5.0, np.ceil(0.08 * est1["n_det"]))
         armed1 = est1["n_det"] >= 5 and est1["f2"] >= f2_floor
-        if stop_t["chao1_ci"] is None and armed1:
-            if est1["ci_upper"] <= 0.05 * est1["K_hat"]:
-                stop_t["chao1_ci"] = t
         
         # Chao92-CI
         fk = full_frequencies(bits)
@@ -175,9 +199,58 @@ def run_episode(alloc_name, run_index, env_seed, cfg=None,
         last_chao92_est = est92
         f2_floor92 = max(5.0, np.ceil(0.08 * est92["n_det"]))
         armed92 = est92["n_det"] >= 5 and float(fk[2]) >= f2_floor92
+        
+        # --- Build the single leak-free PerceptStep for this step ---
+        # All stopping rules read ONLY from this object. Ground truth is never
+        # placed into it, so leak-freedom is enforced by construction rather
+        # than by inspection of each rule's argument list.
+        sc_now = env.fleet_scan_max()
+        dom = env.fleet_area_domain()
+        cov_mask = sc_now > 0
+        cov_frac = float(np.count_nonzero(cov_mask & dom)) / \
+            max(float(np.count_nonzero(dom)), 1.0)
+        if prev_scanmask is not None:
+            new_cells = int(np.count_nonzero((sc_now > 0) & ~(prev_scanmask > 0)))
+        else:
+            new_cells = int(np.count_nonzero(cov_mask & dom))
+        cur_n_det = est1["n_det"]
+        new_find = max(0, cur_n_det - prev_n_det)
+        # Leak-free fleet coverage: fraction of traversable cells scanned >= 1
+        sc_fleet = env.fleet_scan_max()
+        traversable = env.traversable  # total traversable count (leak-free)
+        cover = float(np.count_nonzero((sc_fleet > 0) & ~env.obstacle_map)) / traversable if traversable else 0.0
+        percept = PerceptStep(
+            t=t,
+            bits=bits,
+            fleet_coverage=cover,
+            new_cells_scanned=new_cells,
+            new_finds=new_find,
+            coverage_frac=cov_frac,
+        )
+        if collect_percepts:
+            percept_stream.append(percept_to_dict(percept, cfg["grid_size"]))
+        prev_scanmask = sc_now
+        prev_n_det = cur_n_det
+
+        # --- Estimate / stop rules, all driven by the PerceptStep ---
+        
+        # Chao1-CI
+        if stop_t["chao1_ci"] is None and armed1:
+            if est1["ci_upper"] <= 0.05 * est1["K_hat"]:
+                stop_t["chao1_ci"] = t
+        
+        # Chao92-CI
         if stop_t["chao92_ci"] is None and armed92:
             if est92["U92"] >= 0 and est92["ci92_upper"] <= 0.05 * est92["K_hat92"]:
                 stop_t["chao92_ci"] = t
+
+        # Modern anytime-valid baselines — consume the leak-free PerceptStep.
+        if stop_t["rate_cs"] is None:
+            if rate_cs.update(percept):
+                stop_t["rate_cs"] = t
+        if stop_t["gap_sprt"] is None:
+            if gap_sprt.update(percept):
+                stop_t["gap_sprt"] = t
         
         # Fixed-2
         if stop_t["fixed_2"] is None:
@@ -192,16 +265,30 @@ def run_episode(alloc_name, run_index, env_seed, cfg=None,
                 stop_t["diminishing"] = t
         
         # --- AAARS (continuous blend) ---
-        # Leak-free fleet coverage: fraction of traversable cells scanned >= 1
-        sc_fleet = env.fleet_scan_max()
-        traversable = env.traversable  # total traversable count (leak-free)
-        cover = float(np.count_nonzero((sc_fleet > 0) & ~env.obstacle_map)) / traversable if traversable else 0.0
-        aaars_result = aaars.step(bits, t, fleet_coverage=cover)
+        aaars_result = aaars.step(percept)
+        cover_series.append(cover)
         if stop_t["aaars"] is None and aaars_result["stop"]:
             stop_t["aaars"] = t
+            aaars_stop_cover = cover
+        last_cover = cover
+
+        # --- Threshold-only baseline (Chao1 + adaptive alpha, NO blending) ---
+        # Reuses the same risk trajectory / arming as AAARS, but the stopping
+        # estimate is pure Chao1. Isolates the adaptive-threshold mechanism.
+        # Its adaptive alpha flows from AAARS's coverage-deficit-driven risk
+        # score, so it transitively depends on fleet_coverage (tab:leak *).
+        alpha_adj = aaars_result.get("alpha_adj", 0.05)
+        if stop_t["threshold_aaars"] is None and armed1:
+            if est1["ci_upper"] <= alpha_adj * est1["K_hat"]:
+                stop_t["threshold_aaars"] = t
+
+        # --- Coverage-only baseline (stop when coverage high, no estimator) ---
+        cov_threshold = cfg.get("coverage_only_threshold", 0.90)
+        if stop_t["coverage_only"] is None and cover >= cov_threshold:
+            stop_t["coverage_only"] = t
         
         # --- Discrete selector (ablation) ---
-        discrete_result = discrete.step(bits, t)
+        discrete_result = discrete.step(percept)
         if stop_t["discrete_aaars"] is None and discrete_result["stop"]:
             stop_t["discrete_aaars"] = t
         
@@ -277,9 +364,16 @@ def run_episode(alloc_name, run_index, env_seed, cfg=None,
     res["aaars__switches"] = aaars_stats["num_switches"]
     res["aaars__final_risk"] = aaars_stats["final_risk_score"]
     res["discrete__switches"] = discrete_stats["num_switches"]
+    res["aaars__stop_coverage"] = (round(aaars_stop_cover, 4)
+                                   if aaars_stop_cover is not None else None)
+    res["final_coverage"] = round(last_cover, 4)
+    if not collect_trace:
+        res["coverage_series"] = [round(c, 4) for c in cover_series]
     
     if collect_trace:
         res["_trace"] = json.dumps(trace)
+    if collect_percepts:
+        res["_percepts"] = json.dumps(percept_stream)
     
     return res
 

@@ -10,6 +10,7 @@ rather than switching discretely between them.
 """
 
 import numpy as np
+from src.percepts import PerceptStep
 from src.aaars.observation_monitor import ObservationMonitor
 from src.aaars.temporal_diagnostics import TemporalDiagnostics
 from src.aaars.spatial_diagnostics import SpatialDiagnostics
@@ -104,13 +105,16 @@ class AAARSController:
         self.num_switches = 0
         self._prev_estimator_type = None
     
-    def step(self, bits_union, step, fleet_coverage=None):
-        """Process one decision interval.
-        
+    def step(self, percept: "PerceptStep"):
+        """Process one decision interval from a leak-free PerceptStep.
+
         Args:
-            bits_union: fleet block bits (uint8 grid)
-            step: current simulation step
-            fleet_coverage: leak-free fraction of traversable cells scanned >= 1
+            percept: the fleet's leak-free observation for this step. The
+                controller reads ONLY fields carried by the PerceptStep
+                (scan/fusion bits and fleet coverage); it has no path to the
+                environment's ground truth (true K, located/undetected masks,
+                true recall) because those quantities are not represented in
+                the type.
         
         Returns:
             dict with keys:
@@ -125,6 +129,10 @@ class AAARSController:
             return {"stop": True, "risk_score": self.current_risk,
                     "alpha_adj": self.current_alpha_adj,
                     "blended": None, "diagnostics": {}, "armed": True}
+        
+        bits_union = percept.bits
+        step = percept.t
+        fleet_coverage = percept.fleet_coverage
         
         # 1. Update observation monitor
         self.monitor.update(bits_union, step)
@@ -145,8 +153,7 @@ class AAARSController:
         self.temporal.update(self.monitor)
         self.spatial.update(self.monitor)
         self.frequency.update(self.monitor)
-        if fleet_coverage is not None:
-            self.spatial.coverage = fleet_coverage
+        self.spatial.coverage = fleet_coverage
         
         # 4. Compute risk score
         tcs = self.temporal.temporal_clustering_score()
