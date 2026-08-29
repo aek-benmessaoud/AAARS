@@ -1,0 +1,18 @@
+{
+  "alloc": "boustro",
+  "seed": 50,
+  "env_seed": 50000,
+  "T_total": 6000,
+  "aaars_stop_t": 364,
+  "chao1_stop_t": 355,
+  "total_s": {
+    "chao1": 0.611476,
+    "aaars": 0.653617,
+    "gap_sprt": 0.01092
+  },
+  "n_steps": {
+    "chao1": 6000,
+    "aaars": 6000,
+    "gap_sprt": 6000
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "alloc": "minerich",
+  "seed": 30,
+  "env_seed": 30000,
+  "T_total": 6000,
+  "aaars_stop_t": 769,
+  "chao1_stop_t": 620,
+  "total_s": {
+    "chao1": 0.614335,
+    "aaars": 1.253419,
+    "gap_sprt": 0.010091
+  },
+  "n_steps": {
+    "chao1": 6000,
+    "aaars": 6000,
+    "gap_sprt": 6000
+  }
+}
