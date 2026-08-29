@@ -204,6 +204,9 @@ so it cannot silently drift from the submitted paper after re-runs.
       ever sees the shared `PerceptStep` observables (no `env.n_detections`).
 - [x] This cashes out Contributions claim #4 ("honest, reproducible evaluation").
 - [x] Usage: `python experiments/replay/replay_episode.py --stream <trace.json>` or `--compare`.
+- [x] `experiments/replay/stress_compare.py`: full-scale parallel stress test at the manuscript config
+      (100x100 / 6000 steps), both allocations in parallel, diffing replay vs. live stop times for all
+      nine rules (covers late-arming rules and the horizon-edge `None` case). PASS (<40s wall).
 
 ### Phase-2 status legend
 - [x] done and verified
