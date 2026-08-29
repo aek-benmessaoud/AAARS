@@ -255,6 +255,75 @@ def fig4_stop_time_comparison():
     print("  Saved fig4_stop_times.png/pdf")
 
 
+def fig5_lambda_sweep():
+    """Figure 5: FC% and median stop time vs AAARS risk_lambda (80 seeds
+    per lambda, both allocations; Wilson 95% CI on FC%)."""
+    raw_path = os.path.join(r"F:\Project11-AAARS", "results", "raw",
+                            "lambda_sweep.json")
+    with open(raw_path) as f:
+        results = json.load(f)
+
+    LAM = [0.0, 0.5, 1.0, 2.0, 4.0]
+    ALLOCS = [("boustro", "BoustroLanes", "#2196F3"),
+              ("minerich", "MineRichness", "#FF5722")]
+
+    def wilson(k, n):
+        if n == 0:
+            return (0.0, 0.0)
+        z = 1.96
+        p = k / n
+        denom = 1 + z * z / n
+        c = (p + z * z / (2 * n)) / denom
+        half = z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / denom
+        return (100.0 * (c - half), 100.0 * (c + half))
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.2))
+
+    for alloc, label, color in ALLOCS:
+        sub = [r for r in results if r["alloc"] == alloc]
+        fc_pts, fc_lo, fc_hi, med_t = [], [], [], []
+        for lam in LAM:
+            xs = [r for r in sub if r.get("lam") == lam]
+            n = len(xs)
+            stops = [r for r in xs if r.get("aaars__t") is not None]
+            fc = sum(1 for r in stops if r["aaars__recall"] < 95.0)
+            lo, hi = wilson(fc, n)
+            times = [r["aaars__t"] for r in stops]
+            med_t.append(np.median(times) if times else float("nan"))
+            fc_pts.append(100.0 * fc / n)
+            fc_lo.append(lo)
+            fc_hi.append(hi)
+
+        ax1.plot(LAM, fc_pts, marker="o", color=color, label=label,
+                 linewidth=2)
+        ax1.fill_between(LAM, fc_lo, fc_hi, color=color, alpha=0.2)
+        ax2.plot(LAM, med_t, marker="s", color=color, label=label, linewidth=2)
+
+    ax1.set_xlabel(r"risk $\lambda$")
+    ax1.set_ylabel("False Certification %")
+    ax1.set_title("FC rate vs. risk $\\lambda$")
+    ax1.legend()
+    ax1.set_xticks(LAM)
+    ax1.grid(alpha=0.3)
+    ax1.text(0.02, 0.98, "error bars = Wilson 95% CI", transform=ax1.transAxes,
+             ha="left", va="top", fontsize=8, color="#555")
+
+    ax2.set_xlabel(r"risk $\lambda$")
+    ax2.set_ylabel("Median stop time (steps)")
+    ax2.set_title("Median stop time vs. risk $\\lambda$")
+    ax2.legend()
+    ax2.set_xticks(LAM)
+    ax2.grid(alpha=0.3)
+
+    fig.suptitle("AAARS sensitivity to risk $\\lambda$ (80 seeds each)",
+                 fontsize=13, fontweight="bold")
+    plt.tight_layout()
+    fig.savefig(os.path.join(FIG_DIR, "fig5_lambda_sweep.png"))
+    fig.savefig(os.path.join(FIG_DIR, "fig5_lambda_sweep.pdf"))
+    plt.close(fig)
+    print("  Saved fig5_lambda_sweep.png/pdf")
+
+
 if __name__ == "__main__":
     print("Generating figures...")
     fig1_risk_trajectory()
