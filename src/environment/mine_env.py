@@ -40,12 +40,20 @@ class MineGridEnv(GridEnv):
                  sigma_loc=0.0, comm_range=None,
                  num_mines=60, detectability="homogeneous",
                  p_bar=0.7, strata=(0.9, 0.6, 0.3), persistent=False,
-                 conf_blocks=2, occ_cooldown=50):
+                 conf_blocks=2, occ_cooldown=50,
+                 band_pd=(0.5, 0.7, 0.9), comm_delay=0):
         self.num_mines = num_mines
         self.detectability = detectability
         self.p_bar = p_bar
         self.strata = tuple(strata)
+        self.band_pd = tuple(band_pd)
         self.persistent = persistent
+        # Heterogeneous communication latency: per-agent staleness (in decision
+        # steps) applied to rendezvous fusion. comm_delay=0 -> no latency
+        # (exact symmetric merge, unchanged behaviour). Per-agent lags are drawn
+        # deterministically from a dedicated RNG so the schedule is exactly
+        # reproducible per agent for a given seed (D4 / advisor 2d).
+        self.comm_delay = int(comm_delay)
         # Verification protocol: neutralize a mine only when it was hit in
         # >= conf_blocks DISTINCT occasions (re-detections separated by at
         # least occ_cooldown steps).
@@ -73,24 +81,104 @@ class MineGridEnv(GridEnv):
             # fleets up to 16 agents; fusion ORs these masks).
             np.zeros((gs, gs), dtype=np.uint16) for _ in range(self.num_agents)
         ]
+        # Heterogeneous comm latency (leak-free: only observables are lagged).
+        if self.comm_delay > 0:
+            self._delay_rng = np.random.default_rng(self.seed + 5000)
+            # Per-agent lag in [1, comm_delay], deterministic per seed.
+            self._agent_delay = [
+                int(self._delay_rng.integers(1, self.comm_delay + 1))
+                for _ in range(self.num_agents)
+            ]
+            maxd = max(self._agent_delay)
+            # Circular history of belief snapshots (list of list-of-arrays);
+            # _snap[k] holds the state from (maxd - k) steps ago.
+            self._snap = []
+            self._record_snapshot()
+        else:
+            self._agent_delay = [0] * self.num_agents
+            self._snap = None
+
+    def _record_snapshot(self):
+        """Push a deep copy of every agent's observable belief arrays onto the
+        circular snapshot history (used only when comm_delay > 0)."""
+        gs = self.grid_size
+        entry = []
+        for a in range(self.num_agents):
+            entry.append({
+                "visit": self.local_visit_count[a].copy(),
+                "seen": self.local_seen_mask[a].copy(),
+                "obs": self.local_obstacle_map[a].copy(),
+                "scan": self.local_scan_count[a].copy(),
+                "found": self.local_found[a].copy(),
+                "cfb": self.local_confirm_bits[a].copy(),
+            })
+        self._snap.append(entry)
+        maxd = max(self._agent_delay)
+        if len(self._snap) > maxd + 1:
+            self._snap.pop(0)
+
+    def _snapshot_at(self, agent, lag):
+        """Beliefs of `agent` from `lag` decision-steps ago (0 = now)."""
+        want = len(self._snap) - 1 - lag
+        entry = self._snap[max(0, want)]
+        s = entry[agent]
+        return s["visit"], s["seen"], s["obs"], s["scan"], s["found"], s["cfb"]
 
     def _place_mines(self):
+        gs = self.grid_size
         free = np.argwhere(~self.obstacle_map)
         agent_cells = {tuple(p) for p in self.agent_positions}
         cand = np.array([c for c in free if tuple(c) not in agent_cells])
-        idx = self.rng.choice(len(cand), size=self.num_mines, replace=False)
-        cells = cand[idx]
-        self.mine_mask = np.zeros((self.grid_size,) * 2, dtype=bool)
-        self.mine_mask[cells[:, 0], cells[:, 1]] = True
-        # Per-mine detectability strata (M_h heterogeneity)
-        self.detect_prob = np.zeros((self.grid_size,) * 2, dtype=np.float64)
-        if self.detectability == "homogeneous":
-            self.detect_prob[self.mine_mask] = self.p_bar
+
+        nb = len(self.band_pd)
+        if self.detectability in ("bands_hetero", "bands_rich"):
+            # 3 vertical strips by column index. Each free cell belongs to the
+            # strip that contains its column.
+            bounds = [i * gs // nb for i in range(nb + 1)]
+            bands = np.zeros(len(cand), dtype=int)
+            for b in range(nb):
+                m = (cand[:, 1] >= bounds[b]) & (cand[:, 1] < bounds[b + 1])
+                bands[m] = b
+            band_pd = np.asarray(self.band_pd, dtype=np.float64)
+
+            if self.detectability == "bands_hetero":
+                # H1: mines uniform over free cells; p_d varies only by strip.
+                idx = self.rng.choice(len(cand), size=self.num_mines,
+                                      replace=False)
+            else:
+                # H2: K stays = num_mines (LOCK), only the *distribution* moves.
+                # Concentrate the mines in the STRIP WITH LOWEST p_d (the hardest
+                # zone to detect), so richness is richest exactly where detection
+                # is weakest. Total mines unchanged -> comparability with H0/H1
+                # and tab:confirm is preserved (redistribution, not inflation).
+                low = int(np.argmin(band_pd))
+                weights = np.ones(nb, dtype=np.float64) * 0.2
+                weights[low] = 1.0 - 0.2 * (nb - 1)   # leftover mass on hard zone
+                counts = np.bincount(bands, minlength=nb).astype(np.float64)
+                per_cell = weights[bands] / np.maximum(counts[bands], 1.0)
+                per_cell /= per_cell.sum()
+                idx = self.rng.choice(len(cand), size=self.num_mines,
+                                      replace=False, p=per_cell)
+            cells = cand[idx]
+            cell_bands = bands[idx]
+            self.mine_mask = np.zeros((gs, gs), dtype=bool)
+            self.mine_mask[cells[:, 0], cells[:, 1]] = True
+            self.detect_prob = np.zeros((gs, gs), dtype=np.float64)
+            self.detect_prob[cells[:, 0], cells[:, 1]] = band_pd[cell_bands]
         else:
-            k = len(self.strata)
-            assign = self.rng.integers(0, k, size=len(cells))
-            probs = np.asarray(self.strata, dtype=np.float64)[assign]
-            self.detect_prob[cells[:, 0], cells[:, 1]] = probs
+            idx = self.rng.choice(len(cand), size=self.num_mines, replace=False)
+            cells = cand[idx]
+            self.mine_mask = np.zeros((gs, gs), dtype=bool)
+            self.mine_mask[cells[:, 0], cells[:, 1]] = True
+            # Per-mine detectability strata (M_h heterogeneity)
+            self.detect_prob = np.zeros((gs, gs), dtype=np.float64)
+            if self.detectability == "homogeneous":
+                self.detect_prob[self.mine_mask] = self.p_bar
+            else:
+                k = len(self.strata)
+                assign = self.rng.integers(0, k, size=len(cells))
+                probs = np.asarray(self.strata, dtype=np.float64)[assign]
+                self.detect_prob[cells[:, 0], cells[:, 1]] = probs
         # Ground truth (metrics only)
         self.located_mask = np.zeros((self.grid_size,) * 2, dtype=bool)
         self.neutralized_mask = np.zeros((self.grid_size,) * 2, dtype=bool)
@@ -169,6 +257,10 @@ class MineGridEnv(GridEnv):
         # Base GridEnv does NOT maintain step_index; the mission clock and
         # occasion cooldowns derive from it.
         self.step_index = getattr(self, "step_index", 0) + 1
+        if self.comm_delay > 0:
+            # Record this step's fused/observed beliefs for async fusion read
+            # by the next step's check_and_merge.
+            self._record_snapshot()
         return out
 
     # ------------------------------------------------------------------
@@ -176,6 +268,18 @@ class MineGridEnv(GridEnv):
     # ------------------------------------------------------------------
 
     def merge_maps(self, i, j):
+        if self.comm_delay > 0:
+            # Heterogeneous (async) fusion: each receiver keeps its OWN current
+            # maps and unions in the partner's beliefs as of `d_receiver` steps
+            # ago. Different receivers see different map ages -> the realistic
+            # async-network stress the advisor asked for. Leak-free: only the
+            # observable belief arrays are lagged; ground truth is untouched.
+            vj, sj, oj, scj, foj, cfbj = self._snapshot_at(j, self._agent_delay[i])
+            self._fuse_in(i, (vj, sj, oj, scj, foj, cfbj))
+            vi, si, oi, sci, foi, cfbi = self._snapshot_at(i, self._agent_delay[j])
+            self._fuse_in(j, (vi, si, oi, sci, foi, cfbi))
+            self.fusion_events_count += 1
+            return
         super().merge_maps(i, j)
         np.maximum(self.local_scan_count[i], self.local_scan_count[j],
                    out=self.local_scan_count[i])
@@ -186,6 +290,17 @@ class MineGridEnv(GridEnv):
         self.local_found[j] = fi.copy()
         self.local_confirm_bits[i] = bi
         self.local_confirm_bits[j] = bi.copy()
+
+    def _fuse_in(self, receiver, src):
+        """Union/max the SOURCE's (possibly stale) beliefs into RECEIVER's
+        own current beliefs. Symmetric-merge-free: receiver keeps its own."""
+        r, a = receiver, src
+        self.local_visit_count[r] = np.maximum(self.local_visit_count[r], a[0])
+        self.local_seen_mask[r] |= a[1]
+        self.local_obstacle_map[r] |= a[2]
+        np.maximum(self.local_scan_count[r], a[3], out=self.local_scan_count[r])
+        self.local_found[r] |= a[4]
+        self.local_confirm_bits[r] |= a[5]
 
     # ------------------------------------------------------------------
     # Fleet-level belief summaries (leak-free: beliefs only)

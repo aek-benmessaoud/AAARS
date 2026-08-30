@@ -1,0 +1,802 @@
+[
+  {
+    "run": 10,
+    "env_seed": 10000,
+    "aaars_t": 689,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9803157894736843,
+    "wall_s": 118.8126837000018,
+    "aaars_fc": 0
+  },
+  {
+    "run": 18,
+    "env_seed": 18000,
+    "aaars_t": 1163,
+    "n_prime": 143,
+    "n_cells": 53,
+    "cover_at_stop": 0.8636842105263158,
+    "wall_s": 88.2258800000127,
+    "aaars_fc": 1
+  },
+  {
+    "run": 26,
+    "env_seed": 26000,
+    "aaars_t": 1194,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9345263157894736,
+    "wall_s": 86.3944419999898,
+    "aaars_fc": 0
+  },
+  {
+    "run": 34,
+    "env_seed": 34000,
+    "aaars_t": 724,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9293684210526316,
+    "wall_s": 77.50362970001879,
+    "aaars_fc": 0
+  },
+  {
+    "run": 42,
+    "env_seed": 42000,
+    "aaars_t": 841,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9941052631578947,
+    "wall_s": 96.014525400009,
+    "aaars_fc": 0
+  },
+  {
+    "run": 50,
+    "env_seed": 50000,
+    "aaars_t": 535,
+    "n_prime": 147,
+    "n_cells": 55,
+    "cover_at_stop": 0.9084210526315789,
+    "wall_s": 75.73507279998739,
+    "aaars_fc": 1
+  },
+  {
+    "run": 58,
+    "env_seed": 58000,
+    "aaars_t": 1223,
+    "n_prime": 147,
+    "n_cells": 55,
+    "cover_at_stop": 0.9483157894736842,
+    "wall_s": 86.69274609998683,
+    "aaars_fc": 1
+  },
+  {
+    "run": 66,
+    "env_seed": 66000,
+    "aaars_t": 717,
+    "n_prime": 150,
+    "n_cells": 56,
+    "cover_at_stop": 0.9346315789473684,
+    "wall_s": 83.62926079999306,
+    "aaars_fc": 1
+  },
+  {
+    "run": 74,
+    "env_seed": 74000,
+    "aaars_t": 673,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9948421052631579,
+    "wall_s": 78.97819650001475,
+    "aaars_fc": 0
+  },
+  {
+    "run": 82,
+    "env_seed": 82000,
+    "aaars_t": 938,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9450526315789474,
+    "wall_s": 114.5159206999815,
+    "aaars_fc": 0
+  },
+  {
+    "run": 11,
+    "env_seed": 11000,
+    "aaars_t": 1345,
+    "n_prime": 150,
+    "n_cells": 56,
+    "cover_at_stop": 0.9269473684210526,
+    "wall_s": 107.95590429997537,
+    "aaars_fc": 1
+  },
+  {
+    "run": 19,
+    "env_seed": 19000,
+    "aaars_t": 1147,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9726315789473684,
+    "wall_s": 81.33986570002162,
+    "aaars_fc": 0
+  },
+  {
+    "run": 27,
+    "env_seed": 27000,
+    "aaars_t": 908,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.995578947368421,
+    "wall_s": 72.14810380002018,
+    "aaars_fc": 0
+  },
+  {
+    "run": 35,
+    "env_seed": 35000,
+    "aaars_t": 1430,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.9910526315789474,
+    "wall_s": 107.88816719999886,
+    "aaars_fc": 0
+  },
+  {
+    "run": 43,
+    "env_seed": 43000,
+    "aaars_t": 1630,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9853684210526316,
+    "wall_s": 115.58038719999604,
+    "aaars_fc": 0
+  },
+  {
+    "run": 51,
+    "env_seed": 51000,
+    "aaars_t": 1465,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9953684210526316,
+    "wall_s": 85.9303281000175,
+    "aaars_fc": 0
+  },
+  {
+    "run": 59,
+    "env_seed": 59000,
+    "aaars_t": 1156,
+    "n_prime": 146,
+    "n_cells": 54,
+    "cover_at_stop": 0.9525263157894737,
+    "wall_s": 121.55744980002055,
+    "aaars_fc": 1
+  },
+  {
+    "run": 67,
+    "env_seed": 67000,
+    "aaars_t": 1076,
+    "n_prime": 133,
+    "n_cells": 49,
+    "cover_at_stop": 0.8711578947368421,
+    "wall_s": 103.40277179999975,
+    "aaars_fc": 1
+  },
+  {
+    "run": 75,
+    "env_seed": 75000,
+    "aaars_t": 866,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9946315789473684,
+    "wall_s": 97.4336793999828,
+    "aaars_fc": 0
+  },
+  {
+    "run": 83,
+    "env_seed": 83000,
+    "aaars_t": 1521,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9992631578947369,
+    "wall_s": 87.799388799991,
+    "aaars_fc": 0
+  },
+  {
+    "run": 12,
+    "env_seed": 12000,
+    "aaars_t": 965,
+    "n_prime": 153,
+    "n_cells": 57,
+    "cover_at_stop": 0.9396842105263158,
+    "wall_s": 80.02331009999034,
+    "aaars_fc": 0
+  },
+  {
+    "run": 20,
+    "env_seed": 20000,
+    "aaars_t": 1055,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.9916842105263158,
+    "wall_s": 98.77165379998041,
+    "aaars_fc": 0
+  },
+  {
+    "run": 28,
+    "env_seed": 28000,
+    "aaars_t": 608,
+    "n_prime": 134,
+    "n_cells": 50,
+    "cover_at_stop": 0.9332631578947368,
+    "wall_s": 109.93739700000151,
+    "aaars_fc": 1
+  },
+  {
+    "run": 36,
+    "env_seed": 36000,
+    "aaars_t": 1395,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9989473684210526,
+    "wall_s": 85.05068580000079,
+    "aaars_fc": 0
+  },
+  {
+    "run": 44,
+    "env_seed": 44000,
+    "aaars_t": 974,
+    "n_prime": 153,
+    "n_cells": 57,
+    "cover_at_stop": 0.9490526315789474,
+    "wall_s": 92.05391360001522,
+    "aaars_fc": 0
+  },
+  {
+    "run": 52,
+    "env_seed": 52000,
+    "aaars_t": 693,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.989578947368421,
+    "wall_s": 91.82944199998747,
+    "aaars_fc": 0
+  },
+  {
+    "run": 60,
+    "env_seed": 60000,
+    "aaars_t": 1286,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9795789473684211,
+    "wall_s": 112.08528170001227,
+    "aaars_fc": 0
+  },
+  {
+    "run": 68,
+    "env_seed": 68000,
+    "aaars_t": 1635,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9874736842105263,
+    "wall_s": 141.66092419999768,
+    "aaars_fc": 0
+  },
+  {
+    "run": 76,
+    "env_seed": 76000,
+    "aaars_t": 1537,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9988421052631579,
+    "wall_s": 114.50106900001992,
+    "aaars_fc": 0
+  },
+  {
+    "run": 84,
+    "env_seed": 84000,
+    "aaars_t": 659,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9885263157894737,
+    "wall_s": 66.55261040001642,
+    "aaars_fc": 0
+  },
+  {
+    "run": 13,
+    "env_seed": 13000,
+    "aaars_t": 510,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9353684210526316,
+    "wall_s": 74.73193969999556,
+    "aaars_fc": 0
+  },
+  {
+    "run": 21,
+    "env_seed": 21000,
+    "aaars_t": 582,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9502105263157895,
+    "wall_s": 72.93350439998903,
+    "aaars_fc": 0
+  },
+  {
+    "run": 29,
+    "env_seed": 29000,
+    "aaars_t": 952,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9889473684210527,
+    "wall_s": 112.87509990000399,
+    "aaars_fc": 0
+  },
+  {
+    "run": 37,
+    "env_seed": 37000,
+    "aaars_t": 954,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.9793684210526316,
+    "wall_s": 147.9257193999947,
+    "aaars_fc": 0
+  },
+  {
+    "run": 45,
+    "env_seed": 45000,
+    "aaars_t": 596,
+    "n_prime": 150,
+    "n_cells": 56,
+    "cover_at_stop": 0.9061052631578947,
+    "wall_s": 126.8153966999962,
+    "aaars_fc": 1
+  },
+  {
+    "run": 53,
+    "env_seed": 53000,
+    "aaars_t": 1203,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9497894736842105,
+    "wall_s": 79.42366090000723,
+    "aaars_fc": 0
+  },
+  {
+    "run": 61,
+    "env_seed": 61000,
+    "aaars_t": 614,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.9986315789473684,
+    "wall_s": 99.9554851000139,
+    "aaars_fc": 0
+  },
+  {
+    "run": 69,
+    "env_seed": 69000,
+    "aaars_t": 593,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.987578947368421,
+    "wall_s": 98.13443360000383,
+    "aaars_fc": 0
+  },
+  {
+    "run": 77,
+    "env_seed": 77000,
+    "aaars_t": 566,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.9725263157894737,
+    "wall_s": 96.01421630001278,
+    "aaars_fc": 0
+  },
+  {
+    "run": 85,
+    "env_seed": 85000,
+    "aaars_t": 1262,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9993684210526316,
+    "wall_s": 76.40184840001166,
+    "aaars_fc": 0
+  },
+  {
+    "run": 14,
+    "env_seed": 14000,
+    "aaars_t": 864,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9903157894736843,
+    "wall_s": 100.42770020000171,
+    "aaars_fc": 0
+  },
+  {
+    "run": 22,
+    "env_seed": 22000,
+    "aaars_t": 1302,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9865263157894737,
+    "wall_s": 120.27657779998844,
+    "aaars_fc": 0
+  },
+  {
+    "run": 30,
+    "env_seed": 30000,
+    "aaars_t": 769,
+    "n_prime": 146,
+    "n_cells": 54,
+    "cover_at_stop": 0.8785263157894737,
+    "wall_s": 100.43766680001863,
+    "aaars_fc": 1
+  },
+  {
+    "run": 38,
+    "env_seed": 38000,
+    "aaars_t": 691,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9990526315789474,
+    "wall_s": 102.3722129999951,
+    "aaars_fc": 0
+  },
+  {
+    "run": 46,
+    "env_seed": 46000,
+    "aaars_t": 1544,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9665263157894737,
+    "wall_s": 109.23977610000293,
+    "aaars_fc": 0
+  },
+  {
+    "run": 54,
+    "env_seed": 54000,
+    "aaars_t": 743,
+    "n_prime": 147,
+    "n_cells": 55,
+    "cover_at_stop": 0.923578947368421,
+    "wall_s": 71.34492999999202,
+    "aaars_fc": 1
+  },
+  {
+    "run": 62,
+    "env_seed": 62000,
+    "aaars_t": 2287,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 1.0,
+    "wall_s": 127.1056491000054,
+    "aaars_fc": 0
+  },
+  {
+    "run": 70,
+    "env_seed": 70000,
+    "aaars_t": 1266,
+    "n_prime": 159,
+    "n_cells": 59,
+    "cover_at_stop": 0.9210526315789473,
+    "wall_s": 96.07995769998524,
+    "aaars_fc": 0
+  },
+  {
+    "run": 78,
+    "env_seed": 78000,
+    "aaars_t": 654,
+    "n_prime": 153,
+    "n_cells": 57,
+    "cover_at_stop": 0.9610526315789474,
+    "wall_s": 96.02007030000095,
+    "aaars_fc": 0
+  },
+  {
+    "run": 86,
+    "env_seed": 86000,
+    "aaars_t": 723,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.99,
+    "wall_s": 69.98215480000363,
+    "aaars_fc": 0
+  },
+  {
+    "run": 15,
+    "env_seed": 15000,
+    "aaars_t": 732,
+    "n_prime": 153,
+    "n_cells": 57,
+    "cover_at_stop": 0.9767368421052631,
+    "wall_s": 114.04282120001153,
+    "aaars_fc": 0
+  },
+  {
+    "run": 23,
+    "env_seed": 23000,
+    "aaars_t": 1146,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9953684210526316,
+    "wall_s": 99.65110870002536,
+    "aaars_fc": 0
+  },
+  {
+    "run": 31,
+    "env_seed": 31000,
+    "aaars_t": 2040,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.9881052631578947,
+    "wall_s": 92.77203229998122,
+    "aaars_fc": 0
+  },
+  {
+    "run": 39,
+    "env_seed": 39000,
+    "aaars_t": 1243,
+    "n_prime": 143,
+    "n_cells": 53,
+    "cover_at_stop": 0.923578947368421,
+    "wall_s": 93.34934500002419,
+    "aaars_fc": 1
+  },
+  {
+    "run": 47,
+    "env_seed": 47000,
+    "aaars_t": 1833,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9686315789473684,
+    "wall_s": 111.57439809999778,
+    "aaars_fc": 0
+  },
+  {
+    "run": 55,
+    "env_seed": 55000,
+    "aaars_t": 490,
+    "n_prime": 146,
+    "n_cells": 54,
+    "cover_at_stop": 0.9488421052631579,
+    "wall_s": 72.54402269999264,
+    "aaars_fc": 1
+  },
+  {
+    "run": 63,
+    "env_seed": 63000,
+    "aaars_t": 1741,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9971578947368421,
+    "wall_s": 90.88413940000464,
+    "aaars_fc": 0
+  },
+  {
+    "run": 71,
+    "env_seed": 71000,
+    "aaars_t": 682,
+    "n_prime": 147,
+    "n_cells": 55,
+    "cover_at_stop": 0.9465263157894737,
+    "wall_s": 74.94982850001543,
+    "aaars_fc": 1
+  },
+  {
+    "run": 79,
+    "env_seed": 79000,
+    "aaars_t": 633,
+    "n_prime": 158,
+    "n_cells": 58,
+    "cover_at_stop": 0.9722105263157895,
+    "wall_s": 75.14918350000517,
+    "aaars_fc": 0
+  },
+  {
+    "run": 87,
+    "env_seed": 87000,
+    "aaars_t": 660,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.9592631578947368,
+    "wall_s": 98.52587569999741,
+    "aaars_fc": 0
+  },
+  {
+    "run": 16,
+    "env_seed": 16000,
+    "aaars_t": 735,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9696842105263158,
+    "wall_s": 118.97288069999195,
+    "aaars_fc": 0
+  },
+  {
+    "run": 24,
+    "env_seed": 24000,
+    "aaars_t": 715,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9533684210526315,
+    "wall_s": 96.74569090001751,
+    "aaars_fc": 0
+  },
+  {
+    "run": 32,
+    "env_seed": 32000,
+    "aaars_t": 647,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.986,
+    "wall_s": 83.08283850000589,
+    "aaars_fc": 0
+  },
+  {
+    "run": 40,
+    "env_seed": 40000,
+    "aaars_t": 1531,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.9841052631578947,
+    "wall_s": 113.13476479999372,
+    "aaars_fc": 0
+  },
+  {
+    "run": 48,
+    "env_seed": 48000,
+    "aaars_t": 1088,
+    "n_prime": 146,
+    "n_cells": 54,
+    "cover_at_stop": 0.9125263157894736,
+    "wall_s": 77.38858660002006,
+    "aaars_fc": 1
+  },
+  {
+    "run": 56,
+    "env_seed": 56000,
+    "aaars_t": 1123,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.9949473684210526,
+    "wall_s": 76.56302189998678,
+    "aaars_fc": 0
+  },
+  {
+    "run": 64,
+    "env_seed": 64000,
+    "aaars_t": 1381,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9894736842105263,
+    "wall_s": 91.34352940000826,
+    "aaars_fc": 0
+  },
+  {
+    "run": 72,
+    "env_seed": 72000,
+    "aaars_t": 545,
+    "n_prime": 137,
+    "n_cells": 51,
+    "cover_at_stop": 0.8785263157894737,
+    "wall_s": 99.85198199999286,
+    "aaars_fc": 1
+  },
+  {
+    "run": 80,
+    "env_seed": 80000,
+    "aaars_t": 2143,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 0.9987368421052631,
+    "wall_s": 132.315655399987,
+    "aaars_fc": 0
+  },
+  {
+    "run": 88,
+    "env_seed": 88000,
+    "aaars_t": 551,
+    "n_prime": 159,
+    "n_cells": 59,
+    "cover_at_stop": 0.9795789473684211,
+    "wall_s": 85.40997749997769,
+    "aaars_fc": 0
+  },
+  {
+    "run": 17,
+    "env_seed": 17000,
+    "aaars_t": 566,
+    "n_prime": 159,
+    "n_cells": 59,
+    "cover_at_stop": 0.9334736842105263,
+    "wall_s": 114.85699569998542,
+    "aaars_fc": 0
+  },
+  {
+    "run": 25,
+    "env_seed": 25000,
+    "aaars_t": 1463,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.9830526315789474,
+    "wall_s": 122.74418710000464,
+    "aaars_fc": 0
+  },
+  {
+    "run": 33,
+    "env_seed": 33000,
+    "aaars_t": 653,
+    "n_prime": 147,
+    "n_cells": 55,
+    "cover_at_stop": 0.9474736842105264,
+    "wall_s": 87.28389609997976,
+    "aaars_fc": 1
+  },
+  {
+    "run": 41,
+    "env_seed": 41000,
+    "aaars_t": 621,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.9667368421052631,
+    "wall_s": 81.70364479999989,
+    "aaars_fc": 0
+  },
+  {
+    "run": 49,
+    "env_seed": 49000,
+    "aaars_t": 905,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9767368421052631,
+    "wall_s": 93.33605939999688,
+    "aaars_fc": 0
+  },
+  {
+    "run": 57,
+    "env_seed": 57000,
+    "aaars_t": 1392,
+    "n_prime": 156,
+    "n_cells": 58,
+    "cover_at_stop": 0.9901052631578947,
+    "wall_s": 71.82543659998919,
+    "aaars_fc": 0
+  },
+  {
+    "run": 65,
+    "env_seed": 65000,
+    "aaars_t": 1275,
+    "n_prime": 160,
+    "n_cells": 60,
+    "cover_at_stop": 1.0,
+    "wall_s": 87.65849569998682,
+    "aaars_fc": 0
+  },
+  {
+    "run": 73,
+    "env_seed": 73000,
+    "aaars_t": 580,
+    "n_prime": 153,
+    "n_cells": 57,
+    "cover_at_stop": 0.9404210526315789,
+    "wall_s": 120.59164430000237,
+    "aaars_fc": 0
+  },
+  {
+    "run": 81,
+    "env_seed": 81000,
+    "aaars_t": 494,
+    "n_prime": 153,
+    "n_cells": 57,
+    "cover_at_stop": 0.9384210526315789,
+    "wall_s": 96.97674119999283,
+    "aaars_fc": 0
+  },
+  {
+    "run": 89,
+    "env_seed": 89000,
+    "aaars_t": 1442,
+    "n_prime": 157,
+    "n_cells": 59,
+    "cover_at_stop": 0.9890526315789474,
+    "wall_s": 101.4535651000042,
+    "aaars_fc": 0
+  }
+]

@@ -30,6 +30,15 @@ parser.add_argument("--cov", type=float, default=0.95)
 parser.add_argument("--out", type=str, default="power_revision.json")
 parser.add_argument("--alloc", type=str, default=None,
                     help="single policy name; if set, run only this allocation")
+parser.add_argument("--detectability", type=str, default=None,
+                    help="env detectability mode: homogeneous, bands_hetero "
+                         "(H1), bands_rich (H2)")
+parser.add_argument("--band-pd", type=str, default=None,
+                    help="comma list of per-strip p_d (default 0.5,0.7,0.9)")
+parser.add_argument("--obstacle-ratio", type=float, default=None,
+                    help="override obstacle_ratio (default 0.05)")
+parser.add_argument("--comm-delay", type=int, default=None,
+                    help="heterogeneous comm-latency in steps (default 0 = none)")
 args = parser.parse_args()
 
 SEED_OFFSET = args.offset
@@ -41,6 +50,14 @@ OUT_NAME = args.out
 
 BASE_CFG = {**DEFAULT_CFG, "max_steps": 6000,
             "coverage_only_threshold": COVERAGE_THRESHOLD}
+if args.detectability:
+    BASE_CFG["detectability"] = args.detectability
+if args.band_pd:
+    BASE_CFG["band_pd"] = tuple(float(x) for x in args.band_pd.split(","))
+if args.obstacle_ratio is not None:
+    BASE_CFG["obstacle_ratio"] = args.obstacle_ratio
+if args.comm_delay is not None:
+    BASE_CFG["comm_delay"] = args.comm_delay
 
 AAARS_PARAMS = {
     "w_temporal": 0.0, "w_coverage": 0.55, "w_frequency": 0.45,

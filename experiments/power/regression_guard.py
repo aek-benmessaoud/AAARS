@@ -18,6 +18,8 @@ Campaign files <-> manuscript tables:
   realistic policies        : results/raw/policies_results.json  -> tab:realistic
   lambda sensitivity        : results/raw/lambda_sweep.json      -> sec:lambda
   K x N sweep               : results/raw/config_sweep.json      -> tab:sweep
+  P5 robustness             : results/raw/p5h_obstacles.json +
+                              results/raw/p5h_commdelay.json     -> tab:robust
 
 Every FC count / FC% / median stop time / mean recall below was transcribed
 verbatim from `paper/aaars.tex`. Update the fixtures here ONLY when the paper
@@ -143,6 +145,9 @@ def main():
     pols = load("policies_results.json")
     lam = load("lambda_sweep.json")
     sweep = load("config_sweep.json")
+    h1 = load("p5h_H1.json")
+    h2 = load("p5h_H2.json")
+    front_h2 = load("p5h_frontier_H2.json")
     g = Guard()
 
     # ---- tab:confirm ---------------------------------------------------
@@ -260,6 +265,95 @@ def main():
                 fc_count(cell, "chao1_ci") == fc1
                 and fc_count(cell, "aaars") == faa,
                 f"got {fc_count(cell,'chao1_ci')}/{fc_count(cell,'aaars')}")
+
+    # ---- tab:gen (P5 heterogeneous detectability) --------------------
+    print("tab:gen (p5h_H1.json + p5h_H2.json + p5h_frontier_H2.json)")
+    mr_h1 = by_alloc(h1, "minerich")
+    mr_h2 = by_alloc(h2, "minerich")
+    ft_h2 = by_alloc(front_h2, "frontier")
+    # H1
+    g.check("H1 MineRich Chao1/AAARS FC=27/21",
+            fc_count(mr_h1, "chao1_ci") == 27 and fc_count(mr_h1, "aaars") == 21,
+            f"got {fc_count(mr_h1,'chao1_ci')}/{fc_count(mr_h1,'aaars')}")
+    g.check("H1 MineRich AAARS med_t=828",
+            round(median_stop(mr_h1, "aaars")) == 828,
+            f"got {median_stop(mr_h1,'aaars')}")
+    a, b, c, dd = paired_2x2(mr_h1, "chao1_ci", "aaars")
+    g.check("H1 McNemar (6,0) p=0.031 c=0",
+            b == 6 and c == 0 and abs(exact_mcnemar(b, c) - 0.03125) < 1e-6,
+            f"got b={b},c={c},p={exact_mcnemar(b,c):.4f}")
+    g.check("H1 MinR AAARS=78.3",
+            round(min(r["aaars__recall"] for r in mr_h1), 1) == 78.3)
+    # H2 MineRichness
+    g.check("H2 MineRich Chao1/AAARS FC=29/25",
+            fc_count(mr_h2, "chao1_ci") == 29 and fc_count(mr_h2, "aaars") == 25,
+            f"got {fc_count(mr_h2,'chao1_ci')}/{fc_count(mr_h2,'aaars')}")
+    g.check("H2 MineRich med_t AAARS=761",
+            round(median_stop(mr_h2, "aaars")) == 761,
+            f"got {median_stop(mr_h2,'aaars')}")
+    a, b, c, dd = paired_2x2(mr_h2, "chao1_ci", "aaars")
+    g.check("H2 MineRich McNemar (4,0) p=0.125 c=0",
+            b == 4 and c == 0 and abs(exact_mcnemar(b, c) - 0.125) < 1e-6,
+            f"got b={b},c={c},p={exact_mcnemar(b,c):.4f}")
+    g.check("H2 MineRich MinR AAARS=61.7",
+            round(min(r["aaars__recall"] for r in mr_h2), 1) == 61.7)
+    # H2 Frontier
+    g.check("H2 Frontier Chao1/AAARS FC=15/12",
+            fc_count(ft_h2, "chao1_ci") == 15 and fc_count(ft_h2, "aaars") == 12,
+            f"got {fc_count(ft_h2,'chao1_ci')}/{fc_count(ft_h2,'aaars')}")
+    g.check("H2 Frontier med_t AAARS=822",
+            round(median_stop(ft_h2, "aaars")) == 822,
+            f"got {median_stop(ft_h2,'aaars')}")
+    a, b, c, dd = paired_2x2(ft_h2, "chao1_ci", "aaars")
+    g.check("H2 Frontier McNemar (3,0) p=0.250 c=0",
+            b == 3 and c == 0 and abs(exact_mcnemar(b, c) - 0.25) < 1e-6,
+            f"got b={b},c={c},p={exact_mcnemar(b,c):.4f}")
+    g.check("H2 Frontier MinR AAARS=85.0",
+            min(r["aaars__recall"] for r in ft_h2) == 85.0)
+    # c=0 invariant across ALL five tab:gen cells
+    all_five = [by_alloc(rev, "minerich"), mr_h1, mr_h2, ft_h2,
+                by_alloc(rev, "boustro")]
+    c_all = all(paired_2x2(s, "chao1_ci", "aaars")[2] == 0 for s in all_five)
+    g.check("tab:gen c=0 in every cell (never backfires)", c_all)
+
+    # ---- tab:robust (P5 obstacles + comm-delay) -------------------
+    print("tab:robust (p5h_obstacles.json + p5h_commdelay.json)")
+    rob_obs = load("p5h_obstacles.json")
+    rob_dly = load("p5h_commdelay.json")
+
+    def rob_cell(recs, levkey, lev, alloc="minerich", n=80):
+        cell = [r for r in recs if r.get(levkey) == lev and r.get("alloc") == alloc]
+        assert len(cell) == n, f"{levkey}={lev} alloc={alloc}: got {len(cell)} != {n}"
+        return cell
+
+    # expected (lever, level) -> (chao1_fc, aaars_fc, b, c, p)
+    robust_expected = {
+        ("obs", 0.10): (27, 25, 2, 0, 0.5),
+        ("obs", 0.20): (29, 23, 6, 0, 0.03125),
+        ("dly", 2):    (29, 20, 9, 0, 0.00390625),
+        ("dly", 4):    (23, 16, 7, 0, 0.015625),
+    }
+    rob_all_cells = []
+    for (kind, lev) in robust_expected:
+        if kind == "obs":
+            cell = rob_cell(rob_obs, "obstacle_ratio", lev)
+            cname = f"obs {lev}"
+        else:
+            cell = rob_cell(rob_dly, "comm_delay", lev)
+            cname = f"dly {lev}"
+        rob_all_cells.append(cell)
+        e_c1, e_aa, e_b, e_c, e_p = robust_expected[(kind, lev)]
+        fc1, faa = fc_count(cell, "chao1_ci"), fc_count(cell, "aaars")
+        g.check(f"{cname}: FC {e_c1}/{e_aa}",
+                fc1 == e_c1 and faa == e_aa, f"got {fc1}/{faa}")
+        a, b, c, dd = paired_2x2(cell, "chao1_ci", "aaars")
+        p = exact_mcnemar(b, c)
+        g.check(f"{cname}: McNemar ({e_b},{e_c}) p={e_p}",
+                b == e_b and c == e_c and abs(p - e_p) < 1e-6,
+                f"got b={b},c={c},p={p:.6f}")
+    c_all_rob = all(paired_2x2(s, "chao1_ci", "aaars")[2] == 0
+                    for s in rob_all_cells)
+    g.check("tab:robust c=0 in every cell (never backfires)", c_all_rob)
 
     sys.exit(g.finalize())
 
